@@ -6,24 +6,19 @@ using UnityEngine.UI;
 
 public class LevelLoader : MonoBehaviour
 {
-    Spawner Spawner;
+    [SerializeField]
+    private Spawner Spawner;
     [SerializeField]
     private GameObject GameObject;
     [SerializeField]
     private Text Text;
-
     void Start()
     {
-        if (PlayerPrefs.GetInt("CurrentLevel") == 0)
-        {
-            PlayerPrefs.SetInt("CurrentLevel", 1);
-        }
-        PlayerPrefs.SetInt("CurrentLevel", 1);
         Starter();
     }
     public void RestartGame()
     {
-        PlayerPrefs.SetInt("CurrentLevel", 1);
+        PlayerPrefs.SetInt("CurrentLevel", 0);
         Starter();
     }
     void Starter()
@@ -31,7 +26,6 @@ public class LevelLoader : MonoBehaviour
         Text.DOFade(0f, 0f);
         Spawner = GameObject.GetComponent<Spawner>();
         Spawner.SpawnCubes(PlayerPrefs.GetInt("CurrentLevel"), true);
-        
     }
    
 }

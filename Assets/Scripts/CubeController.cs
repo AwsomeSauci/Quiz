@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
-
+using UnityEngine.EventSystems;
 
 public class CubeController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject image;
+    private GameObject image;//спрайт внутри куба
     [SerializeField]
-    private GameObject cube;
+    private GameObject cube;//куб целиком
     [SerializeField]
     private bool ThisSelected;
     [SerializeField]
-    private ParticleSystem particle;
+    private ParticleSystem particle;//партикл при верном выборе
     [SerializeField]
     private Bouncer Bouncer;
-
+    //Функция Bounce эффекта для куба
     public void BounceStart()
     {
         StartCoroutine(Bouncer.BounceCube(cube));
@@ -26,7 +26,7 @@ public class CubeController : MonoBehaviour
         Instantiate(particle).transform.position = image.transform.position;
         yield return new WaitForSeconds(1.2f);
         PlayerPrefs.SetInt("CurrentLevel", PlayerPrefs.GetInt("CurrentLevel") + 1);
-        if (PlayerPrefs.GetInt("CurrentLevel") == 4)
+        if (PlayerPrefs.GetInt("CurrentLevel") == PlayerPrefs.GetInt("CountLvls"))
         {
             GameObject.Find("GameObject").GetComponent<Fader>().FadeInRestart();
         }
@@ -37,15 +37,17 @@ public class CubeController : MonoBehaviour
         image.transform.DOPunchPosition(new Vector3(0.5f, 0f, 0f), 1f);
         yield return new WaitForSeconds(0f);
     }
-
+    //Данный куб выбран в качестве верного ответа
     public void SelectThis()
     {
         ThisSelected = true;
     }
+    //Обработка клика по кубу
     private void OnMouseDown()
     {
         if (ThisSelected == true)
         {
+            //Bounce эффект спрайта внутри куба
             StartCoroutine(Bouncer.BounceSprite(image));
             StartCoroutine(RightAnswer());
         }
@@ -54,6 +56,7 @@ public class CubeController : MonoBehaviour
             StartCoroutine(WrongAnswer());
         }
     }
+    //Установка спрайта для куба
     public void SetSprite(Sprite sprite)
     {
         image.GetComponent<SpriteRenderer>().sprite = sprite;

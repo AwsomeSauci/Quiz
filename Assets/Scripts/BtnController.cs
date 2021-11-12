@@ -1,24 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class BtnController : MonoBehaviour
+public class BtnController : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
-    private Fader Fader;
-    [SerializeField]
     private GameObject GameObject;
-    public void ResetBtn()
+    public void OnPointerClick(PointerEventData eventData)
     {
-        Fader.FadeInScene();
-        Fader.FadeOutRestart();
+        GameObject.GetComponent<Fader>().FadeInScene();
+        GameObject.GetComponent<Fader>().FadeOutRestart();
         StartCoroutine(RestartGame());
-
     }
     IEnumerator RestartGame()
     {
         yield return new WaitForSeconds(1f);
         GameObject.GetComponent<LevelLoader>().RestartGame();
-        Fader.FadeOutScene();
+        GameObject.GetComponent<Fader>().FadeOutScene();
     }
 }

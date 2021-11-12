@@ -6,94 +6,82 @@ using DG.Tweening;
 
 public class Spawner : MonoBehaviour
 {
-    const float CardSize = 2.22f;
+    private const float CardSize = 2.22f;
+    private const string FindText = "Find ";
     [SerializeField]
-    private CardBoundleData Level1;
-    [SerializeField]
-    private CardBoundleData Level2;
-    [SerializeField]
-    private CardBoundleData Level3;
+    private CardBoundleData[] Levels;
     [SerializeField]
     private Text Text;
-
     [SerializeField]
     private GameObject card;
-    private CardBoundleData Level;
+    [SerializeField]
+    private Fader Fader;
+    private int SelectedLevel;
     private List<GameObject> cards = new List<GameObject>();
     private List<string> FindedValues = new List<string>();
-
     Vector2[,] points;
+    //Очистка игрового поля
     void ClearField()
     {
         if (cards != null)
-        {
-            for (int i = 0; i < cards.Count; i++)
-            {
-                Destroy(cards[i]);
-            }
-            cards.Clear();
-        }
+            for (int i = 0; i < cards.Count; i++) Destroy(cards[i]);
+        cards.Clear();
     }
-    void LevelSelector(int lvl)
+    //Вычисление сдвига значений при генерации массива координат ячеек
+    float CalcShift(int NumItems)
     {
-        switch (lvl)
-        {
-            case 1:
-                Level = Level1;
-                break;
-            case 2:
-                Level = Level2;
-                break;
-            case 3:
-                Level = Level3;
-                break;
-        }
+        if (NumItems % 2 != 0) return CardSize * (NumItems / 2);
+        else return CardSize * (NumItems / 2) - CardSize / 2;
     }
+    //Генерация массива координат ячеек
     void GenerateMatrix()
     {
-        points = new Vector2[Level.strings, Level.columns];
-        for (int i = 0; i < Level.strings; i++)
-        {
-            for (int j = 0; j < Level.columns; j++)
+        points = new Vector2[Levels[SelectedLevel].strings, Levels[SelectedLevel].columns];
+        for (int i = 0; i < Levels[SelectedLevel].strings; i++)
+            for (int j = 0; j < Levels[SelectedLevel].columns; j++)
             {
-                points[i, j].x = j * CardSize - CardSize * (Level.columns / 2);
-                points[i, j].y = i * CardSize - CardSize * (Level.strings / 2);
+                points[i, j].x = j * CardSize - CalcShift(Levels[SelectedLevel].columns);
+                points[i, j].y = i * CardSize - CalcShift(Levels[SelectedLevel].strings);
             }
-        }
     }
-   public void SelectCube(bool effects)
+    //Выбор куба, который необходимо найти
+    public void SelectCube(bool effects)
     {
         int NumCube;
-        int CountCubes = Level1.CardData.Length + Level2.CardData.Length + Level3.CardData.Length;
+        int CountCubes = 0;
+        //поиск максимально возможного количества ячеек
+        for (int i = 0; i < Levels.Length; i++) CountCubes += Levels[SelectedLevel].columns;
         int FindedCount = 0;
+        //Генерация случайного выбора куба для поиска, при отсутствии не использованных ранее
+        //значений, генерируется случайное
         do
         {
             NumCube = Random.Range(0, cards.Count);
             if (FindedCount > CountCubes) break;
             FindedCount++;
         }
-        while (FindedValues.Find(str => str == Level.CardData[NumCube].Identifer) != null);
+        while (FindedValues.Find(str => str == Levels[SelectedLevel].CardData[NumCube].Identifer) != null);
+        FindedValues.Add(Levels[SelectedLevel].CardData[NumCube].Identifer);
         cards[NumCube].GetComponent<CubeController>().SelectThis();
-        Text.text = "Find " + Level.CardData[NumCube].Identifer;
-        if(effects==true) Text.DOFade(1f, 0.5f);
-        else Text.DOFade(1f, 0f);
-        FindedValues.Add(Level.CardData[NumCube].Identifer);
+        Text.text = FindText + Levels[SelectedLevel].CardData[NumCube].Identifer;
+        Fader.FadeInText(Text,effects);
     }
     public void SpawnCubes(int level, bool effects)
     {
+        //Сохранение количества уровней
+        PlayerPrefs.SetInt("CountLvls", Levels.Length);
         ClearField();
-        LevelSelector(level);
+        SelectedLevel = level;
         GenerateMatrix();
         int cardnum = 0;
-        for (int i = 0; i < Level.strings; i++)
+        for (int i = 0; i < Levels[SelectedLevel].strings; i++)
         {
-            for (int j = 0; j < Level.columns; j++)
+            for (int j = 0; j < Levels[SelectedLevel].columns; j++)
             {
                 cards.Add(Instantiate(card));
-                if(effects == true)
-                cards[cardnum].GetComponent<CubeController>().BounceStart();
+                if (effects) cards[cardnum].GetComponent<CubeController>().BounceStart();
                 cards[cardnum].transform.position = points[i, j];
-                cards[cardnum].GetComponent<CubeController>().SetSprite(Level.CardData[cardnum].Sprite);
+                cards[cardnum].GetComponent<CubeController>().SetSprite(Levels[SelectedLevel].CardData[cardnum].Sprite);
                 cardnum++;
             }
         }
