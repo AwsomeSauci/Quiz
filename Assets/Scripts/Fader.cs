@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Fader : MonoBehaviour
 {
+    private const string Cube = "Cube";
     [SerializeField]
     Image faderRestart;//для затемнения при отображении кнопки рестарт
     [SerializeField]
@@ -22,7 +23,7 @@ public class Fader : MonoBehaviour
     }
     public void FadeInRestart()
     {
-        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Cube");
+        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(Cube);
         for(int i = 0; i < gameObjects.Length; i++)
         {
             gameObjects[i].GetComponent<Collider2D>().enabled = false;

@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 
 public class CubeController : MonoBehaviour
 {
+    private const string gameobject = "GameObject";
+    private const string CurrentLevel = "CurrentLevel";
+    private const string CountLvls = "CountLvls";
     [SerializeField]
     private GameObject image;//спрайт внутри куба
     [SerializeField]
@@ -25,12 +28,12 @@ public class CubeController : MonoBehaviour
     {
         Instantiate(particle).transform.position = image.transform.position;
         yield return new WaitForSeconds(1.2f);
-        PlayerPrefs.SetInt("CurrentLevel", PlayerPrefs.GetInt("CurrentLevel") + 1);
-        if (PlayerPrefs.GetInt("CurrentLevel") == PlayerPrefs.GetInt("CountLvls"))
+        PlayerPrefs.SetInt(CurrentLevel, PlayerPrefs.GetInt(CurrentLevel) + 1);
+        if (PlayerPrefs.GetInt(CurrentLevel) == PlayerPrefs.GetInt(CountLvls))
         {
-            GameObject.Find("GameObject").GetComponent<Fader>().FadeInRestart();
+            GameObject.Find(gameobject).GetComponent<Fader>().FadeInRestart();
         }
-        else GameObject.Find("GameObject").GetComponent<Spawner>().SpawnCubes(PlayerPrefs.GetInt("CurrentLevel"), false);
+        else GameObject.Find(gameobject).GetComponent<Spawner>().SpawnCubes(PlayerPrefs.GetInt(CurrentLevel), false);
     }
     IEnumerator WrongAnswer()
     {
@@ -45,7 +48,7 @@ public class CubeController : MonoBehaviour
     //Обработка клика по кубу
     private void OnMouseDown()
     {
-        if (ThisSelected == true)
+        if (ThisSelected)
         {
             //Bounce эффект спрайта внутри куба
             StartCoroutine(Bouncer.BounceSprite(image));

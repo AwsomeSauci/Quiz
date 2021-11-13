@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class LevelLoader : MonoBehaviour
 {
+    private const string CurrentLevel = "CurrentLevel";
     [SerializeField]
     private Spawner Spawner;
     [SerializeField]
@@ -18,14 +19,14 @@ public class LevelLoader : MonoBehaviour
     }
     public void RestartGame()
     {
-        PlayerPrefs.SetInt("CurrentLevel", 0);
+        PlayerPrefs.SetInt(CurrentLevel, 0);
         Starter();
     }
     void Starter()
     {
         Text.DOFade(0f, 0f);
         Spawner = GameObject.GetComponent<Spawner>();
-        Spawner.SpawnCubes(PlayerPrefs.GetInt("CurrentLevel"), true);
+        Spawner.SpawnCubes(PlayerPrefs.GetInt(CurrentLevel), true);
     }
    
 }
