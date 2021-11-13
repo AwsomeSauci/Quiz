@@ -31,6 +31,7 @@ public class CubeController : MonoBehaviour
         PlayerPrefs.SetInt(CurrentLevel, PlayerPrefs.GetInt(CurrentLevel) + 1);
         if (PlayerPrefs.GetInt(CurrentLevel) == PlayerPrefs.GetInt(CountLvls))
         {
+            PlayerPrefs.SetInt(CurrentLevel, PlayerPrefs.GetInt(CurrentLevel) - 1);
             GameObject.Find(gameobject).GetComponent<Fader>().FadeInRestart();
         }
         else GameObject.Find(gameobject).GetComponent<Spawner>().SpawnCubes(PlayerPrefs.GetInt(CurrentLevel), false);

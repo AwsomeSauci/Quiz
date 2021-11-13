@@ -16,6 +16,7 @@ public class LevelLoader : MonoBehaviour
     void Start()
     {
         Starter();
+        
     }
     public void RestartGame()
     {
